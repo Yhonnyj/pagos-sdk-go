@@ -1,0 +1,6 @@
+# Nada de esto pertenece a un cliente HTTP.
+*.exe
+*.test
+*.out
+.env
+.DS_Store
