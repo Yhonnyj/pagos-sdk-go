@@ -116,7 +116,7 @@ type Pago struct {
 	ClaveIdempotencia string `json:"claveIdempotencia"`
 	Estado            Evento `json:"estado"`
 	// Nuestro identificador del pago.
-	Id string `json:"id"`
+	ID string `json:"id"`
 	// Siempre VES.
 	Moneda string `json:"moneda"`
 	// Importe en bolívares, con dos decimales.
@@ -143,9 +143,9 @@ type Aviso struct {
 	// Cuándo se generó el aviso, en UTC.
 	Fecha string `json:"fecha"`
 	// Identifica ESTE aviso.
-	IdEvento string `json:"idEvento"`
+	IDEvento string `json:"idEvento"`
 	// Nuestro id del pago.
-	IdPago string `json:"idPago"`
+	IDPago string `json:"idPago"`
 	Moneda string `json:"moneda"`
 	// Importe en bolívares, con dos decimales.
 	Monto  string           `json:"monto"`
