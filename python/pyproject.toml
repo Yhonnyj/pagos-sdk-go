@@ -1,0 +1,35 @@
+# GENERADO POR scripts/generar_sdk_v2.go DESDE api/openapi-v2.json — NO EDITAR A MANO.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tucapi"
+version = "0.1.0"
+description = "TuCapi SDK for the payments API v2.5.0: payins, payouts, events and webhook verification."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+keywords = ["tucapi", "payments", "payins", "payouts", "webhooks", "venezuela"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+
+# SIN DEPENDENCIAS, a propósito: quien integra un cobro no debería heredar el
+# árbol de dependencias de su proveedor. Todo sale de la biblioteca estándar.
+dependencies = []
+
+[project.urls]
+Homepage = "https://api.tucapi.app/v2/docs"
+Documentation = "https://api.tucapi.app/v2/docs"
+Repository = "https://github.com/Yhonnyj/pagos-sdk-go"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tucapi"]
+
+[tool.hatch.build.targets.sdist]
+include = ["tucapi", "tests", "README.md"]

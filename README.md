@@ -9,6 +9,20 @@ Sin dependencias fuera de la biblioteca estándar.
 go get github.com/Yhonnyj/pagos-sdk-go
 ```
 
+## API v2 — SDK de TuCapi
+
+La API v2 (cobros y pagos por país y moneda, contrato en
+`https://api.tucapi.app/v2/openapi.json`) tiene sus propios SDK en este
+mismo repositorio:
+
+| Lenguaje | Carpeta | Instalar |
+|---|---|---|
+| Go | [`v2/`](v2/) | `go get github.com/Yhonnyj/pagos-sdk-go/v2` |
+| Node | [`node/`](node/) | `npm install tucapi` |
+| Python | [`python/`](python/) | `pip install tucapi` |
+
+Documentación: <https://api.tucapi.app/v2/docs>.
+
 ## Crear un pago
 
 ```go

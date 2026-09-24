@@ -4,6 +4,14 @@ El SDK versiona APARTE del contrato de la API. `VersionDelContrato` dice contra
 qué versión del contrato habla; el tag de este repositorio dice qué versión del
 SDK es.
 
+## [2.0.0] — 2026-09-24 (módulo `v2/`)
+
+Primer SDK de la API v2, en la carpeta `v2/` (módulo
+`github.com/Yhonnyj/pagos-sdk-go/v2`, paquete `tucapi`): cobros (pay-ins),
+pagos (payouts), eventos y verificación de la firma de los webhooks. Sin
+dependencias. En el mismo repositorio, los SDK de Node (`node/`, paquete npm
+`tucapi`) y Python (`python/`, paquete PyPI `tucapi`) de la misma API.
+
 ## [0.1.1] — 2026-08-30
 
 ### ⚠️ Cambio que rompe la compilación
