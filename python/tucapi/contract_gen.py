@@ -1,6 +1,6 @@
 # GENERADO POR scripts/generar_sdk_v2.go DESDE api/openapi-v2.json — NO EDITAR A MANO.
 #
-# Contract version 2.5.0.
+# Contract version 2.6.0.
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from typing import Any, Literal, TypedDict
 DEFAULT_BASE_URL = "https://api.tucapi.app"
 
 #: The version of the API contract this SDK speaks.
-CONTRACT_VERSION = "2.5.0"
+CONTRACT_VERSION = "2.6.0"
 
 #: Request and webhook headers.
 HEADER_IDEMPOTENCY_KEY = "Idempotency-Key"
@@ -162,6 +162,31 @@ METHOD_CODE_INCOMING_TRANSFER: MethodCode = "incoming_transfer"
 METHOD_CODE_MOBILE_PAYMENT: MethodCode = "mobile_payment"
 METHOD_CODE_BANK_TRANSFER: MethodCode = "bank_transfer"
 METHOD_CODE_VALUES: tuple[MethodCode, ...] = ("debit_otp", "direct_debit", "incoming_mobile_payment", "incoming_transfer", "mobile_payment", "bank_transfer",)
+
+#: El motivo normalizado de un fallo, con el código al que pertenece:.
+MotivoDeFallo = Literal["invalid_account", "account_closed", "account_blocked", "beneficiary_mismatch", "invalid_phone", "invalid_bank", "invalid_document", "other", "payer_insufficient_funds", "code_invalid", "code_expired", "no_mandate", "mandate_revoked", "amount_over_limit", "daily_limit", "outside_hours", "invalid_data", "bank_offline", "timeout", "expired", "cancelled"]
+MOTIVO_DE_FALLO_INVALID_ACCOUNT: MotivoDeFallo = "invalid_account"
+MOTIVO_DE_FALLO_ACCOUNT_CLOSED: MotivoDeFallo = "account_closed"
+MOTIVO_DE_FALLO_ACCOUNT_BLOCKED: MotivoDeFallo = "account_blocked"
+MOTIVO_DE_FALLO_BENEFICIARY_MISMATCH: MotivoDeFallo = "beneficiary_mismatch"
+MOTIVO_DE_FALLO_INVALID_PHONE: MotivoDeFallo = "invalid_phone"
+MOTIVO_DE_FALLO_INVALID_BANK: MotivoDeFallo = "invalid_bank"
+MOTIVO_DE_FALLO_INVALID_DOCUMENT: MotivoDeFallo = "invalid_document"
+MOTIVO_DE_FALLO_OTHER: MotivoDeFallo = "other"
+MOTIVO_DE_FALLO_PAYER_INSUFFICIENT_FUNDS: MotivoDeFallo = "payer_insufficient_funds"
+MOTIVO_DE_FALLO_CODE_INVALID: MotivoDeFallo = "code_invalid"
+MOTIVO_DE_FALLO_CODE_EXPIRED: MotivoDeFallo = "code_expired"
+MOTIVO_DE_FALLO_NO_MANDATE: MotivoDeFallo = "no_mandate"
+MOTIVO_DE_FALLO_MANDATE_REVOKED: MotivoDeFallo = "mandate_revoked"
+MOTIVO_DE_FALLO_AMOUNT_OVER_LIMIT: MotivoDeFallo = "amount_over_limit"
+MOTIVO_DE_FALLO_DAILY_LIMIT: MotivoDeFallo = "daily_limit"
+MOTIVO_DE_FALLO_OUTSIDE_HOURS: MotivoDeFallo = "outside_hours"
+MOTIVO_DE_FALLO_INVALID_DATA: MotivoDeFallo = "invalid_data"
+MOTIVO_DE_FALLO_BANK_OFFLINE: MotivoDeFallo = "bank_offline"
+MOTIVO_DE_FALLO_TIMEOUT: MotivoDeFallo = "timeout"
+MOTIVO_DE_FALLO_EXPIRED: MotivoDeFallo = "expired"
+MOTIVO_DE_FALLO_CANCELLED: MotivoDeFallo = "cancelled"
+MOTIVO_DE_FALLO_VALUES: tuple[MotivoDeFallo, ...] = ("invalid_account", "account_closed", "account_blocked", "beneficiary_mismatch", "invalid_phone", "invalid_bank", "invalid_document", "other", "payer_insufficient_funds", "code_invalid", "code_expired", "no_mandate", "mandate_revoked", "amount_over_limit", "daily_limit", "outside_hours", "invalid_data", "bank_offline", "timeout", "expired", "cancelled",)
 
 #: awaiting_code: su usuario tiene que confirmar con el código.
 PendingReason = Literal["awaiting_code", "awaiting_payment", "processing"]
@@ -317,11 +342,12 @@ class EventList(TypedDict):
 
 
 class Failure(TypedDict):
-    """Part of the contract."""
+    """Por qué no salió: code es el código principal (fijo, para decidir), reason el motivo normalizado debajo (para explicar), message un texto legible."""
 
     code: FailureCode
     #: Para mostrar, no para comparar.
     message: str
+    reason: MotivoDeFallo
 
 
 class _FieldRequired(TypedDict):
@@ -439,6 +465,7 @@ class Payer(TypedDict, total=False):
 class _TransactionRequired(TypedDict):
     amount: str
     bank_reference: str | None
+    concept: str
     country: str
     created_at: str
     created_by: CreadoPor
@@ -463,6 +490,7 @@ class Transaction(_TransactionRequired, total=False):
     metadata: dict[str, Any]
     pending_reason: PendingReason
     purpose: Purpose
+    #: Su referencia.
     reference: str
 
 

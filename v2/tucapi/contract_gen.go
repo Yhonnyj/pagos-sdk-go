@@ -1,6 +1,6 @@
 // GENERADO POR scripts/generar_sdk_v2.go DESDE api/openapi-v2.json — NO EDITAR A MANO.
 //
-// Contract version 2.5.0.
+// Contract version 2.6.0.
 
 package tucapi
 
@@ -10,7 +10,7 @@ import "time"
 const DefaultBaseURL = "https://api.tucapi.app"
 
 // ContractVersion is the version of the API contract this SDK speaks.
-const ContractVersion = "2.5.0"
+const ContractVersion = "2.6.0"
 
 // Request and webhook headers.
 const (
@@ -288,11 +288,12 @@ func EventTypeValues() []EventType {
 	return []EventType{EventTypePayinConfirmed, EventTypePayinFailed, EventTypePayoutConfirmed, EventTypePayoutFailed}
 }
 
-// Failure is part of the contract.
+// Failure: Por qué no salió: code es el código principal (fijo, para decidir), reason el motivo normalizado debajo (para explicar), message un texto legible.
 type Failure struct {
 	Code FailureCode `json:"code"`
 	// Para mostrar, no para comparar.
-	Message string `json:"message"`
+	Message string        `json:"message"`
+	Reason  MotivoDeFallo `json:"reason"`
 }
 
 // FailureCode: - counterparty_rejected: El banco del destinatario rechazó la operación.
@@ -409,6 +410,38 @@ type MethodList struct {
 	Methods []Method `json:"methods"`
 }
 
+// MotivoDeFallo: El motivo normalizado de un fallo, con el código al que pertenece:.
+type MotivoDeFallo string
+
+const (
+	MotivoDeFalloInvalidAccount         MotivoDeFallo = "invalid_account"
+	MotivoDeFalloAccountClosed          MotivoDeFallo = "account_closed"
+	MotivoDeFalloAccountBlocked         MotivoDeFallo = "account_blocked"
+	MotivoDeFalloBeneficiaryMismatch    MotivoDeFallo = "beneficiary_mismatch"
+	MotivoDeFalloInvalidPhone           MotivoDeFallo = "invalid_phone"
+	MotivoDeFalloInvalidBank            MotivoDeFallo = "invalid_bank"
+	MotivoDeFalloInvalidDocument        MotivoDeFallo = "invalid_document"
+	MotivoDeFalloOther                  MotivoDeFallo = "other"
+	MotivoDeFalloPayerInsufficientFunds MotivoDeFallo = "payer_insufficient_funds"
+	MotivoDeFalloCodeInvalid            MotivoDeFallo = "code_invalid"
+	MotivoDeFalloCodeExpired            MotivoDeFallo = "code_expired"
+	MotivoDeFalloNoMandate              MotivoDeFallo = "no_mandate"
+	MotivoDeFalloMandateRevoked         MotivoDeFallo = "mandate_revoked"
+	MotivoDeFalloAmountOverLimit        MotivoDeFallo = "amount_over_limit"
+	MotivoDeFalloDailyLimit             MotivoDeFallo = "daily_limit"
+	MotivoDeFalloOutsideHours           MotivoDeFallo = "outside_hours"
+	MotivoDeFalloInvalidData            MotivoDeFallo = "invalid_data"
+	MotivoDeFalloBankOffline            MotivoDeFallo = "bank_offline"
+	MotivoDeFalloTimeout                MotivoDeFallo = "timeout"
+	MotivoDeFalloExpired                MotivoDeFallo = "expired"
+	MotivoDeFalloCancelled              MotivoDeFallo = "cancelled"
+)
+
+// MotivoDeFalloValues lists every MotivoDeFallo.
+func MotivoDeFalloValues() []MotivoDeFallo {
+	return []MotivoDeFallo{MotivoDeFalloInvalidAccount, MotivoDeFalloAccountClosed, MotivoDeFalloAccountBlocked, MotivoDeFalloBeneficiaryMismatch, MotivoDeFalloInvalidPhone, MotivoDeFalloInvalidBank, MotivoDeFalloInvalidDocument, MotivoDeFalloOther, MotivoDeFalloPayerInsufficientFunds, MotivoDeFalloCodeInvalid, MotivoDeFalloCodeExpired, MotivoDeFalloNoMandate, MotivoDeFalloMandateRevoked, MotivoDeFalloAmountOverLimit, MotivoDeFalloDailyLimit, MotivoDeFalloOutsideHours, MotivoDeFalloInvalidData, MotivoDeFalloBankOffline, MotivoDeFalloTimeout, MotivoDeFalloExpired, MotivoDeFalloCancelled}
+}
+
 // NewPayin is part of the contract.
 type NewPayin struct {
 	// Cadena decimal con punto y los decimales de la moneda.
@@ -510,6 +543,8 @@ type Transaction struct {
 	BankReference *string `json:"bank_reference"`
 	// Sólo con awaiting_code: hasta cuándo vale el código.
 	CodeExpiresAt string `json:"code_expires_at,omitempty"`
+	// El concepto que la contraparte ve en su movimiento bancario, por ejemplo «Pago TCP7K2M9Q»: «Pago» o «Cobro», el prefijo de tres letras de su empresa y seis caracteres tomados del id de la operación.
+	Concept string `json:"concept"`
 	// Cuándo se confirmó.
 	ConfirmedAt string    `json:"confirmed_at,omitempty"`
 	Country     string    `json:"country"`
@@ -519,16 +554,17 @@ type Transaction struct {
 	// Sólo cobros recibidos: hasta cuándo se espera el pago.
 	ExpiresAt string `json:"expires_at,omitempty"`
 	// Sólo con failed.
-	Failure       *Failure        `json:"failure"`
-	ID            string          `json:"id"`
-	Metadata      map[string]any  `json:"metadata,omitempty"`
-	Method        MethodCode      `json:"method"`
-	PendingReason PendingReason   `json:"pending_reason,omitempty"`
-	Purpose       Purpose         `json:"purpose,omitempty"`
-	Reference     string          `json:"reference,omitempty"`
-	Status        Status          `json:"status"`
-	Type          TransactionType `json:"type"`
-	UpdatedAt     string          `json:"updated_at"`
+	Failure       *Failure       `json:"failure"`
+	ID            string         `json:"id"`
+	Metadata      map[string]any `json:"metadata,omitempty"`
+	Method        MethodCode     `json:"method"`
+	PendingReason PendingReason  `json:"pending_reason,omitempty"`
+	Purpose       Purpose        `json:"purpose,omitempty"`
+	// Su referencia.
+	Reference string          `json:"reference,omitempty"`
+	Status    Status          `json:"status"`
+	Type      TransactionType `json:"type"`
+	UpdatedAt string          `json:"updated_at"`
 }
 
 // TransactionType is a closed set of values.

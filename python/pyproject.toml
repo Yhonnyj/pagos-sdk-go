@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 [project]
 name = "tucapi"
 version = "0.1.0"
-description = "TuCapi SDK for the payments API v2.5.0: payins, payouts, events and webhook verification."
+description = "TuCapi SDK for the payments API v2.6.0: payins, payouts, events and webhook verification."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Proprietary" }

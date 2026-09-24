@@ -1,12 +1,12 @@
 // GENERADO POR scripts/generar_sdk_v2.go DESDE api/openapi-v2.json — NO EDITAR A MANO.
 //
-// Contract version 2.5.0.
+// Contract version 2.6.0.
 
 /** The production server. */
 export const DEFAULT_BASE_URL = 'https://api.tucapi.app'
 
 /** The version of the API contract this SDK speaks. */
-export const CONTRACT_VERSION = '2.5.0'
+export const CONTRACT_VERSION = '2.6.0'
 
 /** Request and webhook headers. Lower-case: that is how Headers normalises them. */
 export const HEADER_IDEMPOTENCY_KEY = 'idempotency-key'
@@ -206,11 +206,12 @@ export interface EventList {
 export type EventType = 'payin.confirmed' | 'payin.failed' | 'payout.confirmed' | 'payout.failed'
 export const EVENT_TYPE_VALUES: readonly EventType[] = ['payin.confirmed', 'payin.failed', 'payout.confirmed', 'payout.failed']
 
-/** Part of the contract. */
+/** Por qué no salió: code es el código principal (fijo, para decidir), reason el motivo normalizado debajo (para explicar), message un texto legible. */
 export interface Failure {
   code: FailureCode
   /** Para mostrar, no para comparar. */
   message: string
+  reason: MotivoDeFallo
 }
 
 /** - counterparty_rejected: El banco del destinatario rechazó la operación. */
@@ -275,6 +276,10 @@ export const METHOD_CODE_VALUES: readonly MethodCode[] = ['debit_otp', 'direct_d
 export interface MethodList {
   methods: Method[]
 }
+
+/** El motivo normalizado de un fallo, con el código al que pertenece:. */
+export type MotivoDeFallo = 'invalid_account' | 'account_closed' | 'account_blocked' | 'beneficiary_mismatch' | 'invalid_phone' | 'invalid_bank' | 'invalid_document' | 'other' | 'payer_insufficient_funds' | 'code_invalid' | 'code_expired' | 'no_mandate' | 'mandate_revoked' | 'amount_over_limit' | 'daily_limit' | 'outside_hours' | 'invalid_data' | 'bank_offline' | 'timeout' | 'expired' | 'cancelled'
+export const MOTIVO_DE_FALLO_VALUES: readonly MotivoDeFallo[] = ['invalid_account', 'account_closed', 'account_blocked', 'beneficiary_mismatch', 'invalid_phone', 'invalid_bank', 'invalid_document', 'other', 'payer_insufficient_funds', 'code_invalid', 'code_expired', 'no_mandate', 'mandate_revoked', 'amount_over_limit', 'daily_limit', 'outside_hours', 'invalid_data', 'bank_offline', 'timeout', 'expired', 'cancelled']
 
 /** Part of the contract. */
 export interface NewPayin {
@@ -348,6 +353,8 @@ export interface Transaction {
   bank_reference: string | null
   /** Sólo con awaiting_code: hasta cuándo vale el código. */
   code_expires_at?: string
+  /** El concepto que la contraparte ve en su movimiento bancario, por ejemplo «Pago TCP7K2M9Q»: «Pago» o «Cobro», el prefijo de tres letras de su empresa y seis caracteres tomados del id de la operación. */
+  concept: string
   /** Cuándo se confirmó. */
   confirmed_at?: string
   country: string
@@ -363,6 +370,7 @@ export interface Transaction {
   method: MethodCode
   pending_reason?: PendingReason
   purpose?: Purpose
+  /** Su referencia. */
   reference?: string
   status: Status
   type: TransactionType
