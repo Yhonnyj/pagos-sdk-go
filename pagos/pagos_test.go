@@ -129,7 +129,7 @@ func TestCrearPagoMandaLaLlaveYElCuerpo(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := Nuevo("ck_live_abc", ConURL(srv.URL), ConHTTP(srv.Client()))
+	c := Nuevo("tuc_live_abc", ConURL(srv.URL), ConHTTP(srv.Client()))
 	p, err := c.CrearPago(context.Background(), NuevoPago{
 		ClaveIdempotencia: "orden-1", Monto: "150.00", Metodo: PagoMovil,
 		BeneficiarioDocumento: "V12345678", BeneficiarioTelefono: "04145555555",
@@ -138,7 +138,7 @@ func TestCrearPagoMandaLaLlaveYElCuerpo(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if llaveVista != "Bearer ck_live_abc" {
+	if llaveVista != "Bearer tuc_live_abc" {
 		t.Fatalf("la llave no viajo bien: %q", llaveVista)
 	}
 	if !strings.Contains(cuerpoVisto, `"claveIdempotencia":"orden-1"`) {

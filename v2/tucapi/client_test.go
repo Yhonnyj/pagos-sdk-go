@@ -69,7 +69,7 @@ func newClient(t *testing.T, f *fakeAPI, opts ...Option) *Client {
 	t.Helper()
 	srv := httptest.NewServer(f.handler())
 	t.Cleanup(srv.Close)
-	c := New("ck_test_x", append([]Option{WithBaseURL(srv.URL)}, opts...)...)
+	c := New("tuc_test_x", append([]Option{WithBaseURL(srv.URL)}, opts...)...)
 	c.sleep = func(context.Context, time.Duration) error { return nil } // no waiting in tests
 	return c
 }
@@ -94,7 +94,7 @@ func TestACreateSendsTheKeyYouGiveAndReturnsIt(t *testing.T) {
 		t.Fatalf("created: %+v", created)
 	}
 	r := f.requests[0]
-	if r.Key != "order-4821" || r.Auth != "Bearer ck_test_x" || !strings.Contains(r.Body, `"method":"mobile_payment"`) || strings.Contains(r.Body, "purpose") {
+	if r.Key != "order-4821" || r.Auth != "Bearer tuc_test_x" || !strings.Contains(r.Body, `"method":"mobile_payment"`) || strings.Contains(r.Body, "purpose") {
 		t.Fatalf("request: %+v", r)
 	}
 }

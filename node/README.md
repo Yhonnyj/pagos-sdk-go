@@ -11,7 +11,7 @@ npm install tucapi
 ```ts
 import { TuCapi, parseEvent } from 'tucapi'
 
-const c = new TuCapi('ck_live_...')
+const c = new TuCapi('tuc_live_...')
 
 const created = await c.payouts.create(
   { country: 'VE', currency: 'VES', method: 'mobile_payment', amount: '1500.50',

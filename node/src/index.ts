@@ -15,7 +15,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * EXAMPLE
  *
- *   const c = new TuCapi('ck_live_...')
+ *   const c = new TuCapi('tuc_live_...')
  *   const created = await c.payouts.create({ country: 'VE', currency: 'VES', method: 'mobile_payment',
  *     amount: '1500.50', beneficiary: { name: 'Ana', document: { type: 'V', number: '12345678' },
  *     bank_code: '0102', account_number: '04121234567' } }, { idempotencyKey: 'order-4821' })

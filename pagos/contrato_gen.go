@@ -1,6 +1,6 @@
 // GENERADO POR scripts/generar_sdk.go DESDE api/openapi.json — NO EDITAR A MANO.
 //
-// Contrato version 1.0.0.
+// Contrato version 1.1.0.
 
 package pagos
 
@@ -10,7 +10,7 @@ import "time"
 const URLPorOmision = "https://api.tucapi.app"
 
 // VersionDelContrato es la version del contrato que este SDK habla.
-const VersionDelContrato = "1.0.0"
+const VersionDelContrato = "1.1.0"
 
 // Cabeceras del aviso saliente.
 const (
@@ -31,9 +31,13 @@ const MaximoDeIntentos = 6
 
 // Rutas de la API.
 const (
-	RutaCrearPago   = "/v1/pagos"        // POST
-	RutaVerContrato = "/v1/openapi.json" // GET
-	RutaVerPago     = "/v1/pagos/{id}"   // GET
+	RutaConfirmarCobro  = "/v1/cobros/{id}/confirmar" // POST
+	RutaCrearCobro      = "/v1/cobros"                // POST
+	RutaCrearPago       = "/v1/pagos"                 // POST
+	RutaPedirOtroCodigo = "/v1/cobros/{id}/codigo"    // POST
+	RutaVerCobro        = "/v1/cobros/{id}"           // GET
+	RutaVerContrato     = "/v1/openapi.json"          // GET
+	RutaVerPago         = "/v1/pagos/{id}"            // GET
 )
 
 // Metodo es como se identifica al beneficiario.
@@ -69,6 +73,27 @@ const (
 	MotivoSaldoInsuficiente    Motivo = "saldo_insuficiente"
 	MotivoFueraDeHorario       Motivo = "fuera_de_horario"
 	MotivoSinConfirmacion      Motivo = "sin_confirmacion"
+	MotivoCodigoInvalido       Motivo = "codigo_invalido"
+	MotivoCodigoVencido        Motivo = "codigo_vencido"
+	MotivoFondosInsuficientes  Motivo = "fondos_insuficientes"
+	MotivoPagadorNoAfiliado    Motivo = "pagador_no_afiliado"
+	MotivoCodigosAgotados      Motivo = "codigos_agotados"
+)
+
+// EventoDeCobro es el estado de un cobro. Son estos y no hay mas.
+//
+// NO son los mismos que los de un pago: un cobro tiene una persona en el
+// medio y un reloj corriendo.
+type EventoDeCobro string
+
+const (
+	EventoCobroEsperandoCodigo EventoDeCobro = "cobro.esperando_codigo"
+	EventoCobroVerificando     EventoDeCobro = "cobro.verificando"
+	EventoCobroCompletado      EventoDeCobro = "cobro.completado"
+	EventoCobroCodigoInvalido  EventoDeCobro = "cobro.codigo_invalido"
+	EventoCobroRechazado       EventoDeCobro = "cobro.rechazado"
+	EventoCobroVencido         EventoDeCobro = "cobro.vencido"
+	EventoCobroEnRevision      EventoDeCobro = "cobro.en_revision"
 )
 
 // Codigos de error de la API. Compare por estos, nunca por el mensaje.
@@ -85,6 +110,10 @@ const (
 	CodigoNoConsultable       = "no_consultable"
 	CodigoSinRiel             = "sin_riel"
 	CodigoErrorInterno        = "error_interno"
+	CodigoCodigoInvalido      = "codigo_invalido"
+	CodigoNoEsperaCodigo      = "no_espera_codigo"
+	CodigoCodigosAgotados     = "codigos_agotados"
+	CodigoClaveReusada        = "clave_reusada"
 )
 
 // NuevoPago es el pago que se quiere crear.
@@ -154,4 +183,49 @@ type Aviso struct {
 	Referencia string `json:"referencia,omitempty"`
 	// Si reintentar el mismo pago tiene sentido.
 	Reintentar bool `json:"reintentar"`
+}
+
+// NuevoCobro es el cobro que se quiere crear.
+type NuevoCobro struct {
+	// Código de 4 dígitos del banco de quien paga.
+	BancoPagador string `json:"bancoPagador"`
+	// Su identificador del cobro.
+	ClaveIdempotencia string `json:"claveIdempotencia"`
+	// Texto libre suyo, hasta 200 caracteres.
+	Concepto string `json:"concepto,omitempty"`
+	// Importe en bolívares, como string con punto decimal y hasta dos.
+	Monto string `json:"monto"`
+	// Cédula o RIF de quien paga.
+	PagadorDocumento string `json:"pagadorDocumento"`
+	// Nombre de la persona a la que le va a cobrar.
+	PagadorNombre string `json:"pagadorNombre"`
+	// Teléfono móvil de quien paga, donde recibe el código.
+	PagadorTelefono string `json:"pagadorTelefono"`
+	// Por dónde se cobra.
+	Riel string `json:"riel,omitempty"`
+}
+
+// ConfirmacionDeCobro es el codigo que tecleo el usuario. NO se guarda.
+type ConfirmacionDeCobro struct {
+	// El código de autorización.
+	Codigo string `json:"codigo"`
+}
+
+// Cobro es un cobro en el vocabulario publico.
+type Cobro struct {
+	// La clave que usted mandó.
+	ClaveIdempotencia string        `json:"claveIdempotencia"`
+	Estado            EventoDeCobro `json:"estado"`
+	// Nuestro identificador del cobro.
+	ID     string `json:"id"`
+	Moneda string `json:"moneda"`
+	// Importe en bolívares, con dos decimales.
+	Monto  string           `json:"monto"`
+	Motivo *MotivoDetallado `json:"motivo,omitempty"`
+	// Número de referencia del banco.
+	Referencia string `json:"referencia,omitempty"`
+	// Si volver a intentar ESTE cobro tiene sentido.
+	Reintentar *bool `json:"reintentar,omitempty"`
+	// Cuánto le queda a su usuario para teclear el código.
+	SegundosParaVencer *int `json:"segundosParaVencer,omitempty"`
 }

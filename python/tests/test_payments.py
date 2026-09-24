@@ -82,7 +82,7 @@ class FakeAPI:
 
 
 def client(fake: FakeAPI, **kw) -> TuCapi:
-    return TuCapi("ck_test_x", base_url="https://api.test", sleep=lambda s: None, **kw)
+    return TuCapi("tuc_test_x", base_url="https://api.test", sleep=lambda s: None, **kw)
 
 
 def patched(fake: FakeAPI):

@@ -14,7 +14,7 @@ WHAT IT DOES FOR YOU:
 
 Example::
 
-    c = TuCapi("ck_live_...")
+    c = TuCapi("tuc_live_...")
     created = c.payouts.create({"country": "VE", "currency": "VES", "method": "mobile_payment",
                                 "amount": "1500.50", "beneficiary": {...}}, idempotency_key="order-4821")
     created["idempotency_key"]   # the key that was sent: keep it with your order

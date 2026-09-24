@@ -10,7 +10,7 @@ pip install tucapi
 ```python
 from tucapi import TuCapi, parse_event
 
-c = TuCapi("ck_live_...")
+c = TuCapi("tuc_live_...")
 
 created = c.payouts.create(
     {"country": "VE", "currency": "VES", "method": "mobile_payment", "amount": "1500.50",

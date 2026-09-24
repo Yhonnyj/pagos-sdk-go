@@ -21,7 +21,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // EJEMPLO
 //
-//	c := pagos.Nuevo("ck_live_...", pagos.ConURL("https://api.tucapi.app"))
+//	c := pagos.Nuevo("tuc_live_...", pagos.ConURL("https://api.tucapi.app"))
 //
 //	p, err := c.CrearPago(ctx, pagos.NuevoPago{
 //		ClaveIdempotencia:     "mi-orden-4821",
@@ -150,6 +150,89 @@ func (c *Cliente) VerPago(ctx context.Context, id string) (Pago, error) {
 	var out Pago
 	err := c.pedir(ctx, http.MethodGet, "/v1/pagos/"+url.PathEscape(id), nil, &out)
 	return out, err
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// COBROS — la otra dirección: sacarle plata a alguien que lo autoriza
+// ═════════════════════════════════════════════════════════════════════════════
+//
+// Cobrar son DOS pasos con una persona en el medio:
+//
+//	co, _ := c.CrearCobro(ctx, NuevoCobro{...})   // tu usuario recibe un código
+//	// ...tu usuario lo teclea en tu pantalla, dentro de *co.SegundosParaVencer...
+//	co, _ = c.ConfirmarCobro(ctx, co.ID, codigo)  // se ejecuta el débito
+//
+// Y el caso que más se ve, que hay que manejar:
+//
+//	if co.Estado == EventoCobroCodigoInvalido {
+//		co, _ = c.PedirOtroCodigo(ctx, co.ID)  // el anterior ya no sirve
+//	}
+
+// CrearCobro crea el cobro y le manda el código a tu usuario.
+//
+// ⚠️ SI ESTO DEVUELVE ERROR DE RED, EL COBRO PUEDE HABERSE CREADO IGUAL.
+// Repetí el MISMO pedido con la MISMA clave: recibís el cobro que ya existía y
+// —esto es lo importante— NO se le pide otro código a tu usuario, así que el
+// que ya tiene en el teléfono sigue sirviendo.
+func (c *Cliente) CrearCobro(ctx context.Context, co NuevoCobro) (Cobro, error) {
+	var out Cobro
+	err := c.pedir(ctx, http.MethodPost, RutaCrearCobro, co, &out)
+	return out, err
+}
+
+// PedirOtroCodigo le manda a tu usuario un código NUEVO.
+//
+// ⚠️ EL ANTERIOR DEJA DE SERVIR en cuanto llamás acá. Usá esto sólo cuando tu
+// usuario dice que no le llegó el mensaje, o cuando el estado quedó en
+// `EventoCobroCodigoInvalido`. Para reintentar un pedido que falló por red, usá
+// CrearCobro con la misma clave: eso NO le toca el código.
+func (c *Cliente) PedirOtroCodigo(ctx context.Context, id string) (Cobro, error) {
+	var out Cobro
+	err := c.pedir(ctx, http.MethodPost, "/v1/cobros/"+url.PathEscape(id)+"/codigo", nil, &out)
+	return out, err
+}
+
+// ConfirmarCobro ejecuta el débito con el código que tecleó tu usuario.
+//
+// ⚠️ EL CÓDIGO TIENE UN SOLO INTENTO. Si está equivocado no se puede reintentar:
+// el estado queda en `EventoCobroCodigoInvalido` y hay que pedir uno nuevo.
+//
+// ⚠️ NO GUARDES EL CÓDIGO. Es una autorización de débito sobre la cuenta de una
+// persona, no un identificador: usalo y descartalo. Nosotros tampoco lo
+// guardamos.
+//
+// Lo normal es recibir `EventoCobroVerificando`: el débito se confirma contra
+// la red interbancaria y eso tarda unos segundos. Consultá con VerCobro.
+func (c *Cliente) ConfirmarCobro(ctx context.Context, id, codigo string) (Cobro, error) {
+	var out Cobro
+	err := c.pedir(ctx, http.MethodPost, "/v1/cobros/"+url.PathEscape(id)+"/confirmar",
+		ConfirmacionDeCobro{Codigo: codigo}, &out)
+	return out, err
+}
+
+// VerCobro consulta el estado. No le pide nada al banco.
+//
+// A diferencia de los pagos, acá SÍ hace falta: lo habitual es que
+// ConfirmarCobro devuelva `EventoCobroVerificando` y el desenlace se lea de acá
+// unos segundos después.
+func (c *Cliente) VerCobro(ctx context.Context, id string) (Cobro, error) {
+	var out Cobro
+	err := c.pedir(ctx, http.MethodGet, "/v1/cobros/"+url.PathEscape(id), nil, &out)
+	return out, err
+}
+
+// SigueEsperando dice si el cobro todavía está esperando algo.
+//
+// Es la pregunta que decide si tu pantalla sigue mostrando el campo del código
+// o una cuenta regresiva, y evita que cada integración la escriba con su propio
+// `switch` sobre dos estados.
+func (co Cobro) SigueEsperando() bool {
+	return co.Estado == EventoCobroEsperandoCodigo || co.Estado == EventoCobroVerificando
+}
+
+// HayQuePedirOtroCodigo dice si corresponde ofrecer el botón de pedir otro.
+func (co Cobro) HayQuePedirOtroCodigo() bool {
+	return co.Estado == EventoCobroCodigoInvalido
 }
 
 func (c *Cliente) pedir(ctx context.Context, metodo, ruta string, cuerpo, destino any) error {

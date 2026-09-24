@@ -15,7 +15,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // EXAMPLE
 //
-//	c := tucapi.New("ck_live_...")
+//	c := tucapi.New("tuc_live_...")
 //
 //	created, err := c.Payouts.Create(ctx, tucapi.NewPayout{
 //		Country: "VE", Currency: "VES", Method: tucapi.MethodCodeMobilePayment, Amount: "1500.50",

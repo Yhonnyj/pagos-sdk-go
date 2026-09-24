@@ -51,7 +51,7 @@ function fakeFetch(script: Record<string, Answer[]>) {
 }
 
 function client(f: ReturnType<typeof fakeFetch>, extra: ConstructorParameters<typeof TuCapi>[1] = {}) {
-  return new TuCapi('ck_test_x', { baseUrl: 'https://api.test', fetch: f.fetch, sleep: async () => {}, ...extra })
+  return new TuCapi('tuc_test_x', { baseUrl: 'https://api.test', fetch: f.fetch, sleep: async () => {}, ...extra })
 }
 
 const payout = () => ({
