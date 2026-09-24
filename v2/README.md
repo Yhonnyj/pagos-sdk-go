@@ -5,11 +5,11 @@ events and **webhook signature verification**. No dependencies outside the
 standard library.
 
 ```
-go get github.com/tucapi/sdk-go/v2
+go get github.com/Yhonnyj/pagos-sdk-go/v2
 ```
 
 ```go
-import "github.com/tucapi/sdk-go/v2/tucapi"
+import "github.com/Yhonnyj/pagos-sdk-go/v2/tucapi"
 
 c := tucapi.New("ck_live_...")
 
