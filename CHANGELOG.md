@@ -4,6 +4,13 @@ El SDK versiona APARTE del contrato de la API. `VersionDelContrato` dice contra
 qué versión del contrato habla; el tag de este repositorio dice qué versión del
 SDK es.
 
+## [2.1.1] — 2026-09-25 (módulo `v2/`)
+
+Contrato 2.7.0. No cambia nada del código que usa: sólo la versión del contrato
+que el SDK declara y descripciones. `bank_reference` es la referencia que la
+persona ve en su movimiento bancario (en Venezuela, 8 dígitos), y la
+documentación tiene páginas web en https://api.tucapi.app/v2/docs.
+
 ## [2.0.0] — 2026-09-24 (módulo `v2/`)
 
 Primer SDK de la API v2, en la carpeta `v2/` (módulo

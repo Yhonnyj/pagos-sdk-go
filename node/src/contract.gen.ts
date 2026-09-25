@@ -1,12 +1,12 @@
 // GENERADO POR scripts/generar_sdk_v2.go DESDE api/openapi-v2.json — NO EDITAR A MANO.
 //
-// Contract version 2.6.0.
+// Contract version 2.7.0.
 
 /** The production server. */
 export const DEFAULT_BASE_URL = 'https://api.tucapi.app'
 
 /** The version of the API contract this SDK speaks. */
-export const CONTRACT_VERSION = '2.6.0'
+export const CONTRACT_VERSION = '2.7.0'
 
 /** Request and webhook headers. Lower-case: that is how Headers normalises them. */
 export const HEADER_IDEMPOTENCY_KEY = 'idempotency-key'
@@ -349,7 +349,7 @@ export const STATUS_VALUES: readonly Status[] = ['pending', 'confirmed', 'failed
 /** Lo que usted ve de una operación. */
 export interface Transaction {
   amount: string
-  /** La referencia que dio el banco, cuando la dio. */
+  /** La referencia del banco: la que la persona ve en su movimiento bancario (en Venezuela, 8 dígitos). */
   bank_reference: string | null
   /** Sólo con awaiting_code: hasta cuándo vale el código. */
   code_expires_at?: string

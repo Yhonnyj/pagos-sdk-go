@@ -1,6 +1,6 @@
 # GENERADO POR scripts/generar_sdk_v2.go DESDE api/openapi-v2.json — NO EDITAR A MANO.
 #
-# Contract version 2.6.0.
+# Contract version 2.7.0.
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from typing import Any, Literal, TypedDict
 DEFAULT_BASE_URL = "https://api.tucapi.app"
 
 #: The version of the API contract this SDK speaks.
-CONTRACT_VERSION = "2.6.0"
+CONTRACT_VERSION = "2.7.0"
 
 #: Request and webhook headers.
 HEADER_IDEMPOTENCY_KEY = "Idempotency-Key"
